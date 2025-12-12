@@ -53,11 +53,17 @@
             
             <form id="deliveryForm">
                 <!-- Скрытые поля -->
-                <input type="hidden" id="client_id" name="client_id">
-                <input type="hidden" id="name" name="name">
-                <input type="hidden" id="phone" name="phone">
-                <input type="hidden" id="address" name="address">
-                <input type="hidden" id="product" name="product">
+                <input type="hidden" id="platform_id" name="platform_id">
+                <input type="hidden" id="tg_username" name="tg_username">
+                <input type="hidden" id="адрес" name="адрес">
+                <input type="hidden" id="ФИ" name="ФИ">
+                <input type="hidden" id="напиток" name="напиток">
+                <input type="hidden" id="объем" name="объем">
+                <input type="hidden" id="стоимость" name="стоимость">
+                <input type="hidden" id="телефон" name="телефон">
+                <input type="hidden" id="сахар" name="сахар">
+                <input type="hidden" id="сироп" name="сироп">
+                <input type="hidden" id="молоко" name="молоко">
                 <input type="hidden" id="time_slot" name="time_slot">
                 
                 <!-- Выбор даты -->
@@ -102,23 +108,49 @@
         // Получение параметров из URL
         function getUrlParams() {
             const params = new URLSearchParams(window.location.search);
+            
+            // Парсинг параметра "обст" (например: "0,3 - 300₽")
+            const obstValue = params.get('обст') || '';
+            let volume = '';
+            let cost = '';
+            
+            if (obstValue) {
+                const parts = obstValue.split(' - ');
+                if (parts.length === 2) {
+                    volume = parts[0].trim(); // "0,3"
+                    cost = parts[1].replace('₽', '').trim(); // "300"
+                }
+            }
+            
             return {
-                client_id: params.get('client_id') || '',
-                name: params.get('name') || '',
-                phone: params.get('phone') || '',
-                address: params.get('address') || '',
-                product: params.get('product') || ''
+                platform_id: params.get('platform_id') || '',
+                tg_username: params.get('tg_username') || '',
+                адрес: params.get('адрес') || '',
+                ФИ: params.get('ФИ') || '',
+                напиток: params.get('напиток') || '',
+                объем: volume,
+                стоимость: cost,
+                телефон: params.get('телефон') || '',
+                сахар: params.get('сахар') || '',
+                сироп: params.get('сироп') || '',
+                молоко: params.get('молоко') || ''
             };
         }
         
         // Заполнение скрытых полей
         function fillHiddenFields() {
             const params = getUrlParams();
-            document.getElementById('client_id').value = params.client_id;
-            document.getElementById('name').value = params.name;
-            document.getElementById('phone').value = params.phone;
-            document.getElementById('address').value = params.address;
-            document.getElementById('product').value = params.product;
+            document.getElementById('platform_id').value = params.platform_id;
+            document.getElementById('tg_username').value = params.tg_username;
+            document.getElementById('адрес').value = params.адрес;
+            document.getElementById('ФИ').value = params.ФИ;
+            document.getElementById('напиток').value = params.напиток;
+            document.getElementById('объем').value = params.объем;
+            document.getElementById('стоимость').value = params.стоимость;
+            document.getElementById('телефон').value = params.телефон;
+            document.getElementById('сахар').value = params.сахар;
+            document.getElementById('сироп').value = params.сироп;
+            document.getElementById('молоко').value = params.молоко;
         }
         
         // Установка минимальной даты (сегодня)
@@ -158,11 +190,17 @@
             
             // Сбор данных формы
             const formData = {
-                client_id: document.getElementById('client_id').value,
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value,
-                address: document.getElementById('address').value,
-                product: document.getElementById('product').value,
+                platform_id: document.getElementById('platform_id').value,
+                tg_username: document.getElementById('tg_username').value,
+                адрес: document.getElementById('адрес').value,
+                ФИ: document.getElementById('ФИ').value,
+                напиток: document.getElementById('напиток').value,
+                объем: document.getElementById('объем').value,
+                стоимость: document.getElementById('стоимость').value,
+                телефон: document.getElementById('телефон').value,
+                сахар: document.getElementById('сахар').value,
+                сироп: document.getElementById('сироп').value,
+                молоко: document.getElementById('молоко').value,
                 delivery_date: document.getElementById('delivery_date').value,
                 time_slot: selectedTime
             };
