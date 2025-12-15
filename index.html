@@ -148,10 +148,23 @@
             let cost = '';
             
             if (obstValue) {
+                // Если "обст" заполнен - берём оттуда
                 const parts = obstValue.split(' - ');
                 if (parts.length === 2) {
                     volume = parts[0].trim(); // "0,3"
                     cost = parts[1].replace('₽', '').trim(); // "300"
+                }
+            } else {
+                // Если "обст" пустой - проверяем напиток
+                const напиток = params.get('напиток') || '';
+                
+                // Словарь цен
+                if (напиток.includes('Американо') || напиток === 'Американо') {
+                    volume = '0,2';
+                    cost = '150';
+                } else if (напиток.includes('Цитрусовый раф') || напиток === 'Цитрусовый раф') {
+                    volume = '0,3';
+                    cost = '350';
                 }
             }
             
@@ -311,21 +324,21 @@
                 return;
             }
             
-            // Сбор данных формы
+            // Сбор данных формы (ключи на русском для Make)
             const formData = {
                 platform_id: document.getElementById('platform_id').value,
                 tg_username: document.getElementById('tg_username').value,
-                адрес: document.getElementById('адрес').value,
-                ФИ: document.getElementById('ФИ').value,
-                напиток: document.getElementById('напиток').value,
-                объем: document.getElementById('объем').value,
-                стоимость: document.getElementById('стоимость').value,
-                телефон: document.getElementById('телефон').value,
-                сахар: document.getElementById('сахар').value,
-                сироп: document.getElementById('сироп').value,
-                молоко: document.getElementById('молоко').value,
-                delivery_date: document.getElementById('delivery_date').value,
-                time_slot: selectedTime
+                'адрес': document.getElementById('адрес').value,
+                'ФИ': document.getElementById('ФИ').value,
+                'напиток': document.getElementById('напиток').value,
+                'объем': document.getElementById('объем').value,
+                'стоимость': document.getElementById('стоимость').value,
+                'телефон': document.getElementById('телефон').value,
+                'сахар': document.getElementById('сахар').value,
+                'сироп': document.getElementById('сироп').value,
+                'молоко': document.getElementById('молоко').value,
+                'дата_доставки': document.getElementById('delivery_date').value,
+                'время_доставки': selectedTime
             };
             
             try {
