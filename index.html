@@ -199,21 +199,6 @@
             document.getElementById('молоко').value = params.молоко;
         }
         
-        // Установка минимальной и максимальной даты (сегодня + 3 дня)
-        function setMinDate() {
-            const today = new Date();
-            const todayStr = today.toISOString().split('T')[0];
-            
-            // Максимальная дата - через 3 дня
-            const maxDate = new Date(today);
-            maxDate.setDate(today.getDate() + 3);
-            const maxDateStr = maxDate.toISOString().split('T')[0];
-            
-            document.getElementById('delivery_date').setAttribute('min', todayStr);
-            document.getElementById('delivery_date').setAttribute('max', maxDateStr);
-            document.getElementById('delivery_date').value = todayStr;
-        }
-        
         // Получение текущего московского времени (UTC+3)
         function getMoscowTime() {
             const now = new Date();
@@ -222,6 +207,35 @@
             // Добавляем смещение для Москвы (UTC+3)
             const moscowTime = new Date(utcTime + (3 * 3600000));
             return moscowTime;
+        }
+        
+        // Установка минимальной и максимальной даты (сегодня + 3 дня)
+        function setMinDate() {
+            // Используем московское время для установки дат
+            const moscowNow = getMoscowTime();
+            const todayStr = moscowNow.toISOString().split('T')[0];
+            
+            // Максимальная дата - через 3 дня
+            const maxDate = new Date(moscowNow);
+            maxDate.setDate(maxDate.getDate() + 3);
+            const maxDateStr = maxDate.toISOString().split('T')[0];
+            
+            const dateInput = document.getElementById('delivery_date');
+            dateInput.setAttribute('min', todayStr);
+            dateInput.setAttribute('max', maxDateStr);
+            dateInput.value = todayStr;
+            
+            // Дополнительная валидация при изменении даты (для мобильных браузеров)
+            dateInput.addEventListener('change', function() {
+                const selectedDate = this.value;
+                if (selectedDate < todayStr) {
+                    alert('Нельзя выбрать дату в прошлом');
+                    this.value = todayStr;
+                } else if (selectedDate > maxDateStr) {
+                    alert('Можно выбрать дату только в пределах 3 дней');
+                    this.value = maxDateStr;
+                }
+            });
         }
         
         // Загрузка свободных слотов времени из Make
