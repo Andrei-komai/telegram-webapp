@@ -214,10 +214,26 @@
             document.getElementById('delivery_date').value = todayStr;
         }
         
+        // Получение текущего московского времени (UTC+3)
+        function getMoscowTime() {
+            const now = new Date();
+            // Получаем время в UTC
+            const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+            // Добавляем смещение для Москвы (UTC+3)
+            const moscowTime = new Date(utcTime + (3 * 3600000));
+            return moscowTime;
+        }
+        
         // Загрузка свободных слотов времени из Make
         async function fetchCalendarSlots() {
             try {
                 const deliveryDate = document.getElementById('delivery_date').value;
+                
+                // Получаем московское время
+                const moscowNow = getMoscowTime();
+                const todayMoscow = moscowNow.toISOString().split('T')[0];
+                const currentHour = moscowNow.getHours();
+                const currentMinute = moscowNow.getMinutes();
                 
                 // Отправка запроса на Make
                 const response = await fetch('https://hook.eu2.make.com/fxufovm41ih5j27eujbkl2eq3kyvtb1j', {
@@ -232,6 +248,7 @@
                     
                     // Получаем выбранную дату
                     const selectedDate = new Date(deliveryDate).toISOString().split('T')[0];
+                    const isToday = selectedDate === todayMoscow;
                     
                     // Обрабатываем массив событий
                     if (Array.isArray(data)) {
@@ -260,9 +277,16 @@
                     const timeSlotButtons = document.querySelectorAll('.time-slot');
                     timeSlotButtons.forEach(button => {
                         const timeValue = button.getAttribute('data-time');
+                        const [slotHour, slotMinute] = timeValue.split(':').map(Number);
                         
-                        if (busySlots.includes(timeValue)) {
-                            // Слот занят - делаем disabled и меняем стиль
+                        // Проверка: время уже прошло (только для сегодняшнего дня)
+                        const isPastTime = isToday && (
+                            slotHour < currentHour || 
+                            (slotHour === currentHour && slotMinute <= currentMinute)
+                        );
+                        
+                        if (busySlots.includes(timeValue) || isPastTime) {
+                            // Слот занят или время прошло - делаем disabled и меняем стиль
                             button.disabled = true;
                             button.classList.remove('btn-outline-primary');
                             button.classList.add('btn-secondary');
