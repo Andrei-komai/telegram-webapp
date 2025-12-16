@@ -398,14 +398,8 @@
             fillHiddenFields();
             setMinDate();
             
-            // Запускаем параллельно загрузку расписания и таймер минимум 10 секунд
-            const minLoadTime = new Promise(resolve => setTimeout(resolve, 10000));
-            
             // Загружаем расписание
             await fetchCalendarSlots();
-            
-            // Ждём минимум 10 секунд
-            await minLoadTime;
             
             // Скрываем лоадер и показываем форму
             document.getElementById('loader').style.display = 'none';
